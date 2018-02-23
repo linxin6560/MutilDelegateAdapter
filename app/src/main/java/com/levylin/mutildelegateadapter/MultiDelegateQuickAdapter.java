@@ -16,9 +16,9 @@ import java.util.List;
  * 多类型数据适配器
  * Created by LinXin on 2017/6/16.
  */
-public class MultiDelegateQuickAdapter extends BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder> {
+public class MultiDelegateQuickAdapter<T extends MultiItemEntity> extends BaseMultiItemQuickAdapter<T, BaseViewHolder> {
 
-    private SparseArray<AMultiAdapterDelegate> delegates = new SparseArray<>();
+    private SparseArray<Delegate> delegates = new SparseArray<>();
 
     /**
      * Same as QuickAdapter#QuickAdapter(Context,int) but with
@@ -26,13 +26,13 @@ public class MultiDelegateQuickAdapter extends BaseMultiItemQuickAdapter<MultiIt
      *
      * @param data A new list is created out of this one to avoid mutable list
      */
-    public MultiDelegateQuickAdapter(List<MultiItemEntity> data) {
+    public MultiDelegateQuickAdapter(List<T> data) {
         super(data);
     }
 
     @Override
     protected void convert(BaseViewHolder holder, MultiItemEntity item) {
-        AMultiAdapterDelegate delegate = delegates.get(holder.getItemViewType());
+        Delegate delegate = delegates.get(holder.getItemViewType());
         if (delegate != null) {
             delegate.convert(holder, item);
         }
@@ -41,7 +41,7 @@ public class MultiDelegateQuickAdapter extends BaseMultiItemQuickAdapter<MultiIt
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         BaseViewHolder holder = super.onCreateViewHolder(parent, viewType);
-        AMultiAdapterDelegate delegate = delegates.get(viewType);
+        Delegate delegate = delegates.get(viewType);
         if (delegate != null) {
             delegate.onCreateViewHolder(holder, viewType);
         }
@@ -53,12 +53,12 @@ public class MultiDelegateQuickAdapter extends BaseMultiItemQuickAdapter<MultiIt
         super.onAttachedToRecyclerView(recyclerView);
         for (int i = 0; i < delegates.size(); i++) {
             int key = delegates.keyAt(i);
-            AMultiAdapterDelegate delegate = delegates.get(key);
+            Delegate delegate = delegates.get(key);
             delegate.onAttachedToRecyclerView(recyclerView);
         }
     }
 
-    public void addMultiDelegate(AMultiAdapterDelegate delegate) {
+    public void addDelegate(Delegate<T> delegate) {
         delegates.append(delegate.getItemType(), delegate);
         addItemType(delegate.getItemType(), delegate.getLayoutId());
     }
@@ -67,12 +67,12 @@ public class MultiDelegateQuickAdapter extends BaseMultiItemQuickAdapter<MultiIt
      * 多类型数据适配器
      * Created by LinXin on 2017/6/16.
      */
-    public abstract class AMultiAdapterDelegate {
+    public static abstract class Delegate<T extends MultiItemEntity> {
 
         protected RecyclerView.Adapter mAdapter;
         protected Context mContext;
 
-        public AMultiAdapterDelegate(RecyclerView.Adapter adapter) {
+        public Delegate(RecyclerView.Adapter adapter) {
             this.mAdapter = adapter;
         }
 
@@ -81,7 +81,7 @@ public class MultiDelegateQuickAdapter extends BaseMultiItemQuickAdapter<MultiIt
 
         public abstract int getItemType();
 
-        public abstract void convert(BaseViewHolder holder, MultiItemEntity item);
+        public abstract void convert(BaseViewHolder holder, T item);
 
         public void onCreateViewHolder(BaseViewHolder holder, int viewType) {
 
