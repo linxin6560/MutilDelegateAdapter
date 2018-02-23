@@ -1,7 +1,7 @@
-##介绍
+## 介绍
 基于[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)的多类型适配器
 
-##使用
+## 使用
 
         final List<MultipleItem> data = DataServer.getMultipleItemData();
         final MultiDelegateQuickAdapter<MultipleItem> multipleItemAdapter = new MultiDelegateQuickAdapter<>(data);
