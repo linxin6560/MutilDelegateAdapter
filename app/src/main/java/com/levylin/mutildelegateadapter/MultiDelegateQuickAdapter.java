@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class MultiDelegateQuickAdapter<T extends MultiItemEntity> extends BaseMultiItemQuickAdapter<T, BaseViewHolder> {
 
-    private SparseArray<Delegate> delegates = new SparseArray<>();
+    private SparseArray<Delegate<T>> delegates = new SparseArray<>();
 
     /**
      * Same as QuickAdapter#QuickAdapter(Context,int) but with
@@ -31,8 +31,8 @@ public class MultiDelegateQuickAdapter<T extends MultiItemEntity> extends BaseMu
     }
 
     @Override
-    protected void convert(BaseViewHolder holder, MultiItemEntity item) {
-        Delegate delegate = delegates.get(holder.getItemViewType());
+    protected void convert(BaseViewHolder holder, T item) {
+        Delegate<T> delegate = delegates.get(holder.getItemViewType());
         if (delegate != null) {
             delegate.convert(holder, item);
         }
@@ -41,7 +41,7 @@ public class MultiDelegateQuickAdapter<T extends MultiItemEntity> extends BaseMu
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         BaseViewHolder holder = super.onCreateViewHolder(parent, viewType);
-        Delegate delegate = delegates.get(viewType);
+        Delegate<T> delegate = delegates.get(viewType);
         if (delegate != null) {
             delegate.onCreateViewHolder(holder, viewType);
         }
@@ -53,7 +53,7 @@ public class MultiDelegateQuickAdapter<T extends MultiItemEntity> extends BaseMu
         super.onAttachedToRecyclerView(recyclerView);
         for (int i = 0; i < delegates.size(); i++) {
             int key = delegates.keyAt(i);
-            Delegate delegate = delegates.get(key);
+            Delegate<T> delegate = delegates.get(key);
             delegate.onAttachedToRecyclerView(recyclerView);
         }
     }
